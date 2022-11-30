@@ -23,7 +23,7 @@ const app = {
     isRandom: false,
     isRepeat: false,
     config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
-    setConfig: function(key, value) {
+    setConfig: function (key, value) {
         this.config[key] = value;
         localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
     },
@@ -121,7 +121,7 @@ const app = {
 
         // Xử lý CD quay / dừng
         const cdThumbAnimate = cdThumb.animate([
-            {transform: 'rotate(360deg)'}
+            { transform: 'rotate(360deg)' }
         ], {
             duration: 10000, // 10s
             iterations: Infinity,
@@ -147,21 +147,21 @@ const app = {
         }
 
         // Khi song được play
-        audio.onplay = function() {
+        audio.onplay = function () {
             _this.isPlaying = true;
             player.classList.add('playing');
             cdThumbAnimate.play();
         }
 
         // Khi song bị pause
-        audio.onpause = function() {
+        audio.onpause = function () {
             _this.isPlaying = false;
             player.classList.remove('playing');
             cdThumbAnimate.pause();
         }
 
         // Khi tiến độ bài hát thay đổi
-        audio.ontimeupdate = function() {
+        audio.ontimeupdate = function () {
             if (audio.duration) {
                 const processPercent = Math.floor((audio.currentTime / audio.duration) * 100);
                 progress.value = processPercent;
@@ -169,20 +169,20 @@ const app = {
         }
 
         // Xử lý khi tua song
-        progress.oninput = function(e) {
+        progress.oninput = function (e) {
             // 236s -> 100%
             // ?s -> 50%
             // const seekTime = audio.duration / 100 * e.target.value;
             audio.pause();
             const seekTime = (e.target.value * audio.duration) / 100;
             audio.currentTime = seekTime;
-            progress.onchange = function() {
+            progress.onchange = function () {
                 audio.play();
             }
         }
 
         // Khi next song
-        nextBtn.onclick = function() {
+        nextBtn.onclick = function () {
             if (_this.isRandom) {
                 _this.playRandomSong();
             } else {
@@ -195,7 +195,7 @@ const app = {
         }
 
         // Khi prev song
-        prevBtn.onclick = function() {
+        prevBtn.onclick = function () {
             if (_this.isRandom) {
                 _this.playRandomSong();
             } else {
@@ -208,21 +208,21 @@ const app = {
         }
 
         // Xử lý bật / tắt random song
-        randomBtn.onclick = function(e) {
+        randomBtn.onclick = function (e) {
             _this.isRandom = !_this.isRandom;
             _this.setConfig('isRandom', _this.isRandom);
             randomBtn.classList.toggle('active', _this.isRandom);
         }
 
         // Xử lý lặp lại một song
-        repeatBtn.onclick = function() {
+        repeatBtn.onclick = function () {
             _this.isRepeat = !_this.isRepeat;
             _this.setConfig('isRepeat', _this.isRepeat);
             repeatBtn.classList.toggle('active', _this.isRepeat);
         }
 
         // Xử lý next song khi audio end
-        audio.onended = function() {
+        audio.onended = function () {
             if (_this.isRepeat) {
                 audio.play();
             } else {
@@ -231,27 +231,27 @@ const app = {
         }
 
         // Lắng nghe hành vi click vào playList
-        playList.onclick = function(e) {
+        playList.onclick = function (e) {
             const songNode = e.target.closest('.song:not(.active)');
             const optionItem = e.target.closest('.option__item');
             // if (songNode || e.target.closest('.option')) {
-                // Xử lý khi click vào song
-                if (songNode && !optionItem) {
-                    _this.currentIndex = Number(songNode.getAttribute('data-index'));
-                    _this.loadCurrentSong();
-                    // _this.render();
-                    _this.activeSong();
-                    audio.play();
-                }
+            // Xử lý khi click vào song
+            if (songNode && !optionItem) {
+                _this.currentIndex = Number(songNode.getAttribute('data-index'));
+                _this.loadCurrentSong();
+                // _this.render();
+                _this.activeSong();
+                audio.play();
+            }
 
-                // Xử lý khi click vào song option
-                if (e.target.closest('.option')) {
-                    alert(('Option not found!'));
-                }
+            // Xử lý khi click vào song option
+            if (e.target.closest('.option')) {
+                alert(('Option not found!'));
+            }
             // }
         }
     },
-    scrollToActiveSong: function() {
+    scrollToActiveSong: function () {
         setTimeout(() => {
             $('.song.active').scrollIntoView({
                 behavior: 'smooth',
@@ -264,46 +264,46 @@ const app = {
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
         audio.src = this.currentSong.path;
     },
-    loadConfig: function() {
+    loadConfig: function () {
         this.isRandom = this.config.isRandom;
         this.isRepeat = this.config.isRepeat;
 
         // Object.assign(this, this.config);
     },
-    activeSong: function() {
+    activeSong: function () {
         if ($('.song.active')) {
             $('.song.active').classList.remove('active');
         }
         $$('.song')[this.currentIndex].classList.add('active');
     },
-    nextSong: function() {
+    nextSong: function () {
         this.currentIndex++;
         if (this.currentIndex >= this.songs.length) {
             this.currentIndex = 0;
         }
         this.loadCurrentSong();
     },
-    prevSong: function() {
+    prevSong: function () {
         this.currentIndex--;
         if (this.currentIndex < 0) {
             this.currentIndex = this.songs.length - 1;
         }
         this.loadCurrentSong();
     },
-    playRandomSong: function() {
+    playRandomSong: function () {
         let newIndex;
-        
+
         // Thêm current index vào mảng playedSongsList mỗi khi có bài hát đc load
         this.playedSongsList.push(this.currentIndex);
 
         if (this.playedSongsList.length === this.songs.length) {
             this.playedSongsList = [];
         }
-        
+
         do {
             newIndex = Math.floor(Math.random() * this.songs.length);
         } while (this.playedSongsList.includes(newIndex));
-        
+
         this.currentIndex = newIndex;
         this.loadCurrentSong();
     },
