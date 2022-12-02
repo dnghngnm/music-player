@@ -31,62 +31,62 @@ const app = {
         {
             name: "See Tình",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song1.mp3",
-            image: "../assets/img/img1.jpg",
+            path: "assets/music/song1.mp3",
+            image: "assets/img/img1.jpg",
         },
         {
             name: "Kẻ Cắp Gặp Bà Già",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song2.mp3",
-            image: "../assets/img/img2.jpg",
+            path: "assets/music/song2.mp3",
+            image: "assets/img/img2.jpg",
         },
         {
             name: "Gieo Quẻ",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song3.mp3",
-            image: "../assets/img/img3.jpg",
+            path: "assets/music/song3.mp3",
+            image: "assets/img/img3.jpg",
         },
         {
             name: "Để Mị Nói Cho Mà Nghe",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song4.mp3",
-            image: "../assets/img/img4.jpg",
+            path: "assets/music/song4.mp3",
+            image: "assets/img/img4.jpg",
         },
         {
             name: "Duyên Âm",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song5.mp3",
-            image: "../assets/img/img5.jpg",
+            path: "assets/music/song5.mp3",
+            image: "assets/img/img5.jpg",
         },
         {
             name: "Bánh Trôi Nước",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song6.mp3",
-            image: "../assets/img/img6.jpg",
+            path: "assets/music/song6.mp3",
+            image: "assets/img/img6.jpg",
         },
         {
             name: "Kẽo Cà Kẽo Kẹt",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song7.mp3",
-            image: "../assets/img/img7.jpg",
+            path: "assets/music/song7.mp3",
+            image: "assets/img/img7.jpg",
         },
         {
             name: "Em Đây Chẳng Phải Thúy Kiều",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song8.mp3",
-            image: "../assets/img/img8.jpg",
+            path: "assets/music/song8.mp3",
+            image: "assets/img/img8.jpg",
         },
         {
             name: "Khi Tình Yêu Đủ Lớn",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song9.mp3",
-            image: "../assets/img/img9.jpg",
+            path: "assets/music/song9.mp3",
+            image: "assets/img/img9.jpg",
         },
         {
             name: "Lắm Mối Tối Ngồi Không",
             singer: "Hoàng Thùy Linh",
-            path: "../assets/music/song10.mp3",
-            image: "../assets/img/img10.jpg",
+            path: "assets/music/song10.mp3",
+            image: "assets/img/img10.jpg",
         },
     ],
     render: function () {
@@ -165,6 +165,7 @@ const app = {
             if (audio.duration) {
                 const processPercent = Math.floor((audio.currentTime / audio.duration) * 100);
                 progress.value = processPercent;
+                progress.style.background = `linear-gradient(to right, var(--primary-color) ${processPercent}%, #d3d3d3 0%)`;
             }
         }
 
@@ -270,6 +271,10 @@ const app = {
 
         // Object.assign(this, this.config);
     },
+    checkConfig: function() {
+        this.config.isRepeat === true ? repeatBtn.classList.add('active', this.isRepeat) : repeatBtn.classList.remove('active', this.isRepeat);
+        this.config.isRandom === true ? randomBtn.classList.add('active', this.isRandom) : randomBtn.classList.remove('active', this.isRandom);
+    },
     activeSong: function () {
         if ($('.song.active')) {
             $('.song.active').classList.remove('active');
@@ -308,6 +313,9 @@ const app = {
         this.loadCurrentSong();
     },
     start: function () {
+        // check config
+        this.checkConfig();
+
         // Gán cấu hình từ config vào ứng dụng
         this.loadConfig();
         // Định nghĩa các thuộc tính cho object
@@ -323,8 +331,8 @@ const app = {
         this.render();
 
         // Hiển thị trạng thái ban đầu của button repeat và random
-        randomBtn.classList.toggle('active', this.isRandom);
-        repeatBtn.classList.toggle('active', this.isRepeat);
+        // randomBtn.classList.toggle('active', this.isRandom);
+        // repeatBtn.classList.toggle('active', this.isRepeat);
     },
 };
 
