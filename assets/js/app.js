@@ -22,6 +22,9 @@ const app = {
     isPlaying: false,
     isRandom: false,
     isRepeat: false,
+    isCurrentIndex: 0,
+    isProgress: 0,
+    isProgressPercent: 0,
     config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
     setConfig: function (key, value) {
         this.config[key] = value;
@@ -165,7 +168,9 @@ const app = {
             if (audio.duration) {
                 const processPercent = Math.floor((audio.currentTime / audio.duration) * 100);
                 progress.value = processPercent;
-                progress.style.background = `linear-gradient(to right, var(--primary-color) ${processPercent}%, #d3d3d3 0%)`;
+                progress.style.background = `linear-gradient(to right, var(--primary-color) ${progress.value}%, #d3d3d3 0%)`;
+                _this.setConfig('isProgress', audio.currentTime);
+                _this.setConfig('isProgressPercent', processPercent);
             }
         }
 
@@ -264,22 +269,41 @@ const app = {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
         audio.src = this.currentSong.path;
+
+        // reset progress bar
+        // progress.style.background = `linear-gradient(to right, var(--primary-color) 0%, #d3d3d3 0%)`;
+        
+        // lưu lại index bài hát hiện tại vào local Storage
+        this.setConfig('isCurrentIndex', this.currentIndex);
     },
     loadConfig: function () {
         this.isRandom = this.config.isRandom;
         this.isRepeat = this.config.isRepeat;
+        this.currentIndex = this.config.isCurrentIndex;
+        this.scrollToActiveSong();
+        audio.currentTime = this.config.isProgress;
+        progress.value = this.config.isProgressPercent;
 
         // Object.assign(this, this.config);
     },
     checkConfig: function() {
         this.config.isRepeat === true ? repeatBtn.classList.add('active', this.isRepeat) : repeatBtn.classList.remove('active', this.isRepeat);
         this.config.isRandom === true ? randomBtn.classList.add('active', this.isRandom) : randomBtn.classList.remove('active', this.isRandom);
+        this.config.isCurrentIndex === undefined ? this.config.isCurrentIndex = 0 : '';
+        this.config.isProgress === undefined ? this.config.isProgress = 0 : '';
+        this.config.isProgressPercent === undefined ? this.config.isProgressPercent = 0 : '';
+        
+        // xử lý progress bar khi load lại trang web
+        this.config.isProgress !== audio.currentTime ? progress.style.background = `linear-gradient(to right, var(--primary-color) ${this.config.isProgressPercent}%, #d3d3d3 0%)` : '';
     },
     activeSong: function () {
         if ($('.song.active')) {
             $('.song.active').classList.remove('active');
         }
         $$('.song')[this.currentIndex].classList.add('active');
+
+        // tối ưu hóa progress bar khi sang bài hát khác
+        progress.style.background = `linear-gradient(to right, var(--primary-color) ${progress.value = 0}, #d3d3d3 0%)`;
     },
     nextSong: function () {
         this.currentIndex++;
@@ -313,11 +337,13 @@ const app = {
         this.loadCurrentSong();
     },
     start: function () {
+        
         // check config
         this.checkConfig();
 
         // Gán cấu hình từ config vào ứng dụng
         this.loadConfig();
+
         // Định nghĩa các thuộc tính cho object
         this.defineProperties();
 
@@ -329,7 +355,7 @@ const app = {
 
         // Render playlist
         this.render();
-
+        
         // Hiển thị trạng thái ban đầu của button repeat và random
         // randomBtn.classList.toggle('active', this.isRandom);
         // repeatBtn.classList.toggle('active', this.isRepeat);
